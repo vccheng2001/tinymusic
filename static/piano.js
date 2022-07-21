@@ -75,6 +75,7 @@
   };
   
   function press(key) {
+    console.log(key);
     var audio = sound(key);
     if (depressed[key]) {
       return;
