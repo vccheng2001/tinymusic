@@ -62,6 +62,8 @@ def process_notes(notes):
 @app.route("/api/predict", methods=["POST"])
 def predict():
     body = request.get_json()
+    timesignature = body['timesignature']
+    tempo = body['tempo']
     notestring = process_notes(body['notes'])
     
     # Get model
@@ -76,8 +78,8 @@ def predict():
         input={
             "notes": notestring,
             "chords": "Em | Em | ? | ? ",
-            "time_signature": 4,
-            "tempo": 100,
+            "time_signature": timesignature,
+            "tempo": tempo, 
             "sample_width": 80,
             "seed": -1
         },

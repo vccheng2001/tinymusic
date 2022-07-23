@@ -15,7 +15,15 @@
   along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-var notes, notesList, started, draw, temp, tempValue;
+var notes, notesList, started, draw;
+var timesignature, timesignatureValue, tempo, tempoValue;
+
+function doBoth() {
+  changeTimeSignature();
+  changeTempo();
+  document.getElementById("loading").classList.add("shown");
+
+}
 
 window.onload = async function() {
     notesList = [];
@@ -42,13 +50,23 @@ window.onload = async function() {
 
 
 
-  temp = document.querySelector("#temp");
-  temp.onblur = doBoth;
+  timesignature = document.querySelector("#timesignature");
+  tempo = document.querySelector("#tempo");
 
-  temp.onkeypress = (e) => {
-    console.log('pressed temp');
+  timesignature.onblur = doBoth;
+  tempo.onblur = doBoth;
+
+  timesignature.onkeypress = (e) => {
+    console.log('pressed timesignature');
     if (e.code == "Enter") {
-      temp.blur();
+      timesignature.blur();
+    }
+  };
+
+  tempo.onkeypress = (e) => {
+    console.log('pressed tempo');
+    if (e.code == "Enter") {
+      tempo.blur();
     }
   };
 
@@ -294,7 +312,9 @@ async function startPrediction(paths) {
   var resp = await fetch("/api/predict", {
     method: "POST",
     body: JSON.stringify({
-      notes: notesList
+      notes: notesList,
+      timesignature: timesignatureValue,
+      tempo: tempoValue,
     }),
     headers: {
       "Content-type": "application/json"
@@ -342,10 +362,23 @@ function show_image(output) {
 }
 
 
-async function doBoth() {
+async function changeTimeSignature() {
   
-  tempValue = temp.value;
-  if (!started && tempValue) {
+  timesignatureValue = timesignature.value;
+  tempoValue = tempo.value;
+  if (!started && timesignatureValue && tempoValue) {
+    started = true;
+    step();
+    document.getElementById("loading").classList.add("shown");
+    notesList = [];
+  }
+}
+
+async function changeTempo() {
+  
+  timesignatureValue = timesignature.value;
+  tempoValue = tempo.value;
+  if (!started && timesignatureValue && tempoValue) {
     started = true;
     step();
     document.getElementById("loading").classList.add("shown");
