@@ -16,11 +16,12 @@
 */
 
 var notes, notesList, started, draw;
-var timesignature, timesignatureValue, tempo, tempoValue;
+var timesignature, timesignatureValue, tempo, tempoValue, numbars, numbarsValue;
 
 function doBoth() {
   changeTimeSignature();
   changeTempo();
+  changeNumBars();
   document.getElementById("loading").classList.add("shown");
 
 }
@@ -52,7 +53,9 @@ window.onload = async function() {
 
   timesignature = document.querySelector("#timesignature");
   tempo = document.querySelector("#tempo");
+  numbars = document.querySelector("#numbars");
 
+  numbars.onblur = doBoth;
   timesignature.onblur = doBoth;
   tempo.onblur = doBoth;
 
@@ -67,6 +70,13 @@ window.onload = async function() {
     console.log('pressed tempo');
     if (e.code == "Enter") {
       tempo.blur();
+    }
+  };
+
+  numbars.onkeypress = (e) => {
+    console.log('pressed numbars');
+    if (e.code == "Enter") {
+      numbars.blur();
     }
   };
 
@@ -366,10 +376,13 @@ async function changeTimeSignature() {
   
   timesignatureValue = timesignature.value;
   tempoValue = tempo.value;
-  if (!started && timesignatureValue && tempoValue) {
+  if (!started && timesignatureValue && tempoValue && notesList.length >= timesignature.value*4) {
     started = true;
+    console.log('Starting!!!!')
+
     step();
     document.getElementById("loading").classList.add("shown");
+    // reset notes 
     notesList = [];
   }
 }
@@ -378,10 +391,30 @@ async function changeTempo() {
   
   timesignatureValue = timesignature.value;
   tempoValue = tempo.value;
-  if (!started && timesignatureValue && tempoValue) {
+  // need at least four bars
+  if (!started && timesignatureValue && tempoValue && notesList.length >= timesignature.value*4) {
     started = true;
+    console.log('Starting!!!!')
     step();
     document.getElementById("loading").classList.add("shown");
+    // reset notes
+    notesList = [];
+  }
+}
+
+
+async function changeNumBars() {
+  
+  timesignatureValue = timesignature.value;
+  tempoValue = tempo.value;
+  numbarsValue = numbars.value;
+  // need at least four bars
+  if (!started && timesignatureValue && tempoValue && numbarsValue && notesList.length >= timesignature.value*4) {
+    started = true;
+    console.log('Starting!!!!')
+    step();
+    document.getElementById("loading").classList.add("shown");
+    // reset notes
     notesList = [];
   }
 }

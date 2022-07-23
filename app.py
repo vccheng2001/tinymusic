@@ -38,6 +38,7 @@ keymap = {'A2': "A4",
       'Bb4': "a#'4",
       'B4': "b'4",
       'C5': "c''4",
+      '?': '?'
  }
 
 # Render index page
@@ -45,15 +46,25 @@ keymap = {'A2': "A4",
 def index():
     return render_template("index.html")
 
+
+def round_to_multiple(num, multiple):
+    return multiple * round(num/multiple)
 # Notes are in TinyNotation format:
 # https://web.mit.edu/music21/doc/usersGuide/usersGuide_16_tinyNotation.html
-def process_notes(notes):
-    notes = notes[:16]
+def process_notes(notes, timesignature, num_bars_to_inpaint):
+    # 15 notes 
+
+    # inpaints four bars of melodies 
+    leftover = len(notes) % timesignature # how many full bars
+    notes = notes + ['?']*num_bars_to_inpaint
+    print('notes with inpaint', 'notes')
+
     notestring = ''
     for i in range(len(notes)):
+
         notestring += keymap[notes[i]]
         notestring += ' '
-        if (i+1) % 4 == 0:
+        if (i+1) % timesignature  == 0:
             notestring += '| '
         
     print('final notestring:', notestring)
@@ -62,9 +73,10 @@ def process_notes(notes):
 @app.route("/api/predict", methods=["POST"])
 def predict():
     body = request.get_json()
-    timesignature = body['timesignature']
-    tempo = body['tempo']
-    notestring = process_notes(body['notes'])
+    timesignature = int(body['timesignature'])
+    tempo = int(body['tempo'])
+    num_bars_to_inpaint = int(body['num_bars_to_inpaint'])
+    notestring = process_notes(body['notes'], timesignature, num_bars_to_inpaint)
     
     # Get model
     print('Fetching model and version......')
