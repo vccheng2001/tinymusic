@@ -15,6 +15,30 @@
   along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+var notes, notesList, started, draw, temp, tempValue;
+
+window.onload = async function() {
+  // draw = SVG().addTo('body').attr({
+  //   viewBox: "-50 0 100 100",
+  //   width: "100%",
+  //   height: "100%",
+  // });
+  
+
+
+  temp = document.querySelector("#temp");
+  console.log('temp');
+
+  temp.onblur = doBoth;
+
+  temp.onkeypress = (e) => {
+    if (e.code == "Enter") {
+      temp.blur();
+    }
+  };
+}
+
+
 (function() {
 
   /* Piano keyboard pitches. Names match sound files by ID attribute. */
@@ -75,9 +99,8 @@
   };
   
   function press(key) {
-    console.log(key);
     var audio = sound(key);
-    if (depressed[key]) {
+    if (depressed[key]) { // already pressed
       return;
     }
     clearInterval(intervals[key]);
@@ -91,7 +114,7 @@
       }
     }
     $(pianoClass(key)).animate({
-      'backgroundColor': '#88FFAA'
+      'backgroundColor': '#c1a9e6'
     }, 0);
   };
 
@@ -146,17 +169,31 @@
 
   /* Sustain pedal, toggled by user. */
   
-  var sustaining = false;
+  var sustaining = false; // toggle with spacebar
 
   /* Register mouse event callbacks. */
   
+  var notesList = [];
   keys.forEach(function(key) {
+
+    // if key is pressed
     $(pianoClass(key)).mousedown(function() {
+
+      // change color
       $(pianoClass(key)).animate({
         'backgroundColor': '#88FFAA'
       }, 0);
+      
+      // play audio 
       press(key);
+
+      // log
+      console.log(key);
+
+      notesList.push(key);
     });
+
+
     if (fadeout) {
       $(pianoClass(key)).mouseup(function() {
         depressed[key] = false;
@@ -211,3 +248,81 @@
   });
 
 })();
+
+async function step(output) {
+  try {
+    resp = await startPrediction(output);
+    const predictionID = resp['prediction_id'];
+    output = await waitForPrediction(predictionID);
+
+  } catch (error) {
+    started = false;
+    console.log("Caught error:", error);
+    return;
+  }
+  console.log('output:');
+  console.log(output);
+
+  step(output);
+  show_image(output);
+}
+
+async function startPrediction(paths) {
+
+  console.log('calling startPrediction')
+  notesList.forEach((element) => {
+    console.log(element)
+    }
+  );
+  var resp = await fetch("/api/predict", {
+    method: "POST",
+    body: JSON.stringify({
+      notes: notesList
+    }),
+    headers: {
+      "Content-type": "application/json"
+    }
+  })
+  if (!resp.ok) {
+    throw new Error(resp.statusText);
+  }
+  resp = await resp.json();
+  return resp;
+}
+
+// fetch the prediction by its ID, wait for status to be finished
+async function waitForPrediction(predictionID) {
+  while (true) {
+    var resp = await fetch(`/api/predictions/${predictionID}`);
+    var resp = await resp.json();
+    const status = resp["status"]
+    switch (status) {
+      case "succeeded":
+        return resp["output"];
+      case "failed":
+      case "canceled":
+        throw new Error("Prediction " + status);
+      case "starting":
+        await new Promise(r => setTimeout(r, 1000));
+        break;
+      default:
+        await new Promise(r => setTimeout(r, 100));
+    }
+  }
+}
+
+function show_image(img) {
+  // image
+  document.getElementById("score").src=img;
+
+}
+
+
+async function doBoth() {
+  tempValue = temp.value;
+  if (!started && tempValue) {
+    started = true;
+    step();
+    document.getElementById("loading").classList.add("shown");
+  }
+}

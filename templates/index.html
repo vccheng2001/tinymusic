@@ -3,19 +3,28 @@
   <head>
     <meta charset="utf-8"/>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.1.2/svg.min.js"></script>
     <link rel="stylesheet" href="static/piano.css"/>
     <script src="static/jquery-1.7.2.min.js"></script>
     <script src="static/jquery-ui-1.8.20.custom.min.js"></script>
     <script src="/static/piano.js"></script>
-
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+  
     <title>Piano</title>
+    
     <div id="headerbox">
       <h2 id="heading"> Tiny Piano 🎹 </h2>
       <h6 id="subheading"> 28-key Steinway that inpaints melodies </h6>
     </div>
+
+
   </head>
 
   <body>
+
+    <div id="loading"><img src="/static/loading.svg"></div>
+
     <audio id="sound-A2" src="static/samples/A2.ogg" preload="auto"></audio>
     <audio id="sound-Bb2" src="static/samples/Bb2.ogg" preload="auto"></audio>
     <audio id="sound-B2" src="static/samples/B2.ogg" preload="auto"></audio>
@@ -44,8 +53,19 @@
     <audio id="sound-Gb4" src="static/samples/Gb4.ogg" preload="auto"></audio>
     <audio id="sound-G4" src="static/samples/G4.ogg" preload="auto"></audio>
     <audio id="sound-C5" src="static/samples/C5.ogg" preload="auto"></audio>
+    
+    
+    <img id="score" src="" alt="" class="center" style="width:80%">
+    <select id="temp">
+        <option selected="selected">1</option>
+        <option>2</option>
+        <option>3</option>
+    </select>
+
+    
     <div class="piano">
       <noscript class="piano-javascript">This program requires Javascript and HTML5 Audio support.</noscript>
+      
       <div class="piano-container">
         <div class="piano-keys">
           <div class="piano-white piano-A2"></div>
@@ -77,12 +97,13 @@
           <div class="piano-white piano-B4"></div>
           <div class="piano-white piano-C5"></div>
         </div>
-        <div class="piano-pedal">Just listen to that sustain!</div>
       </div>
     </div>
+
+
     <script src="/static/piano.js"></script>
-    <p style="text-align:center; font-size:smaller;">
+    <!-- <p style="text-align:center; font-size:smaller;">
       <a href="https://github.com/michaelmp/js-piano">source code</a>
-    </p>
+    </p> -->
   </body>
 </html>
