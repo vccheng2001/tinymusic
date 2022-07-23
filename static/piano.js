@@ -18,26 +18,39 @@
 var notes, notesList, started, draw, temp, tempValue;
 
 window.onload = async function() {
-  // draw = SVG().addTo('body').attr({
-  //   viewBox: "-50 0 100 100",
-  //   width: "100%",
-  //   height: "100%",
-  // });
+    notesList = [];
+}
+//   // draw = SVG().addTo('body').attr({
+//   //   viewBox: "-50 0 100 100",
+//   //   width: "100%",
+//   //   height: "100%",
+//   // });
   
 
 
-  temp = document.querySelector("#temp");
-  console.log('temp');
+//   temp = document.querySelector("#temp");
+//   console.log('temp');
 
+//   temp.onblur = doBoth;
+
+//   temp.onkeypress = (e) => {
+//     if (e.code == "Enter") {
+//       temp.blur();
+//     }
+//   };
+// }
+
+
+
+  temp = document.querySelector("#temp");
   temp.onblur = doBoth;
 
   temp.onkeypress = (e) => {
+    console.log('pressed temp');
     if (e.code == "Enter") {
       temp.blur();
     }
   };
-}
-
 
 (function() {
 
@@ -173,7 +186,7 @@ window.onload = async function() {
 
   /* Register mouse event callbacks. */
   
-  var notesList = [];
+  // var notesList = [];
   keys.forEach(function(key) {
 
     // if key is pressed
@@ -191,6 +204,7 @@ window.onload = async function() {
       console.log(key);
 
       notesList.push(key);
+      console.log(...notesList);
     });
 
 
@@ -253,6 +267,9 @@ async function step(output) {
   try {
     resp = await startPrediction(output);
     const predictionID = resp['prediction_id'];
+    console.log('prediction ID');
+    console.log(predictionID);
+
     output = await waitForPrediction(predictionID);
 
   } catch (error) {
@@ -270,10 +287,10 @@ async function step(output) {
 async function startPrediction(paths) {
 
   console.log('calling startPrediction')
-  notesList.forEach((element) => {
-    console.log(element)
-    }
-  );
+  // notesList.forEach((element) => {
+  //   console.log(element)
+  //   }
+  // );
   var resp = await fetch("/api/predict", {
     method: "POST",
     body: JSON.stringify({
@@ -298,8 +315,10 @@ async function waitForPrediction(predictionID) {
     const status = resp["status"]
     switch (status) {
       case "succeeded":
+        console.log('succeeded!');
         return resp["output"];
       case "failed":
+        console.log('failed');
       case "canceled":
         throw new Error("Prediction " + status);
       case "starting":
@@ -311,18 +330,25 @@ async function waitForPrediction(predictionID) {
   }
 }
 
-function show_image(img) {
+function show_image(output) {
+
+  var mp3 = output['mp3'];
+  var score = output['score']
+  var midi = output['midi'];
   // image
-  document.getElementById("score").src=img;
+  document.getElementById("score").src=score;
+  document.getElementById("mp3").src=mp3;
 
 }
 
 
 async function doBoth() {
+  
   tempValue = temp.value;
   if (!started && tempValue) {
     started = true;
     step();
     document.getElementById("loading").classList.add("shown");
+    notesList = [];
   }
 }

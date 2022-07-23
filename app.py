@@ -10,16 +10,59 @@ from flask import (
 import random 
 app = Flask(__name__)
 
+keymap = {'A2': "A4",
+	  'Bb2': "A#4",
+	  'B2': "B4",
+	  'C3': "c4",
+	  'Db3': "c#4",
+	  'D3': "d4",
+	  'Eb3': "d#4",
+	  'E3': "e4",
+	  'F3': "f4",
+	  'Gb3': "f#4",
+	  'G3': "g4",
+	  'Ab3': "g#4",
+      'A3': "a4",
+	  'Bb3': "a#4",
+	  'B3': "b4",
+      'C4': "c'4",
+      'Db4':"c#'4",
+	  'D4': "d'4",
+      'Eb4': "d#'4",
+      'E4': "e'4",
+      'F4': "f'4",
+      'Gb4': "f#'4",
+      'G4': "g'4",
+      'Ab4': "g#'4",
+      'A4': "a'4",
+      'Bb4': "a#'4",
+      'B4': "b'4",
+      'C5': "c''4",
+ }
+
 # Render index page
 @app.route("/")
 def index():
     return render_template("index.html")
 
+# Notes are in TinyNotation format:
+# https://web.mit.edu/music21/doc/usersGuide/usersGuide_16_tinyNotation.html
+def process_notes(notes):
+    notes = notes[:16]
+    notestring = ''
+    for i in range(len(notes)):
+        notestring += keymap[notes[i]]
+        notestring += ' '
+        if (i+1) % 4 == 0:
+            notestring += '| '
+        
+    print('final notestring:', notestring)
+    return notestring
 # Predict
 @app.route("/api/predict", methods=["POST"])
 def predict():
     body = request.get_json()
-    notes = body['notes']
+    notestring = process_notes(body['notes'])
     
     # Get model
     print('Fetching model and version......')
@@ -31,7 +74,8 @@ def predict():
     prediction = replicate.predictions.create(
         version=version,
         input={
-            "notes": notes,
+            "notes": notestring,
+            "chords": "Em | Em | ? | ? ",
             "time_signature": 4,
             "tempo": 100,
             "sample_width": 80,
