@@ -62,7 +62,7 @@
 
     <div id="bodybox" class="container">
       <div class="row">
-        <div id="newsbox" class="col-sm">
+        <div id="newsbox" class="col">
 
           <!-- <div class="form-line"> -->
             <label id="timesignaturelabel">Time Signature</label>
@@ -72,12 +72,10 @@
               <option>5</option>
               <option>7</option>
             </select>
-            <br>
       
             <label id="tempolabel">Tempo</label>
             <input id="tempo" placeholder="Enter a tempo..."/>
-            <hr>
-            <label id="numbarslabel">Tempo</label>
+            <label id="numbarslabel"># Bars to Inpaint</label>
             <input id="numbars" placeholder="# bars to inpaint"/>
       
           <!-- </div> -->
@@ -86,7 +84,7 @@
 
 
         </div>
-        <div class="col-sm">
+        <div class="col-9">
 
           <div class="piano">
             <noscript class="piano-javascript">This program requires Javascript and HTML5 Audio support.</noscript>
@@ -125,6 +123,10 @@
             </div>
           </div>
 
+          <img id="score" src="" alt="" class="center" style="width:80%">
+          <audio id="mp3" src="">
+
+
 
           <!-- <img id="img" src="" alt="" class="center" style="width:80%"> -->
         </div>
@@ -138,9 +140,7 @@
 
 
     
-    <img id="score" src="" alt="" class="center" style="width:80%">
-    <audio id="mp3" src="">
-
+    
     <script src="/static/piano.js"></script>
     <!-- <p style="text-align:center; font-size:smaller;">
       <a href="https://github.com/michaelmp/js-piano">source code</a>

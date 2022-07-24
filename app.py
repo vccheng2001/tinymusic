@@ -38,7 +38,7 @@ keymap = {'A2': "A4",
       'Bb4': "a#'4",
       'B4': "b'4",
       'C5': "c''4",
-      '?': '?'
+    #   '?': '?'
  }
 
 # Render index page
@@ -48,16 +48,21 @@ def index():
 
 
 def round_to_multiple(num, multiple):
-    return multiple * round(num/multiple)
+    import math
+    return multiple * math.floor(num/multiple)
 # Notes are in TinyNotation format:
 # https://web.mit.edu/music21/doc/usersGuide/usersGuide_16_tinyNotation.html
 def process_notes(notes, timesignature, num_bars_to_inpaint):
     # 15 notes 
+    print('orig num notes:', len(notes))
+    num_notes = round_to_multiple(len(notes), timesignature)
+    notes = notes[:num_notes]
+    print('new num notes:', len(notes))
 
-    # inpaints four bars of melodies 
-    leftover = len(notes) % timesignature # how many full bars
-    notes = notes + ['?']*num_bars_to_inpaint
-    print('notes with inpaint', 'notes')
+    # # inpaints four bars of melodies 
+    # leftover = len(notes) % timesignature # how many full bars
+    # # notes = notes + ['?']*num_bars_to_inpaint
+    # print('notes with inpaint', 'notes')
 
     notestring = ''
     for i in range(len(notes)):
@@ -66,18 +71,21 @@ def process_notes(notes, timesignature, num_bars_to_inpaint):
         notestring += ' '
         if (i+1) % timesignature  == 0:
             notestring += '| '
+    for j in range(num_bars_to_inpaint):
+        notestring += ' ? |'
         
     print('final notestring:', notestring)
-    return notestring
+    return notestring, notestring.count('|')
 # Predict
 @app.route("/api/predict", methods=["POST"])
 def predict():
     body = request.get_json()
+    print('body', body)
     timesignature = int(body['timesignature'])
     tempo = int(body['tempo'])
-    num_bars_to_inpaint = int(body['num_bars_to_inpaint'])
-    notestring = process_notes(body['notes'], timesignature, num_bars_to_inpaint)
-    
+    num_bars_to_inpaint = int(body['numbars'])
+    notestring, num_total_bars = process_notes(body['notes'], timesignature, num_bars_to_inpaint)
+    print('num total bars', num_total_bars)
     # Get model
     print('Fetching model and version......')
     model = replicate.models.get("andreasjansson/music-inpainting-bert")
@@ -89,7 +97,7 @@ def predict():
         version=version,
         input={
             "notes": notestring,
-            "chords": "Em | Em | ? | ? ",
+            "chords": '? |' * num_total_bars,
             "time_signature": timesignature,
             "tempo": tempo, 
             "sample_width": 80,

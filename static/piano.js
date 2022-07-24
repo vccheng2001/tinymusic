@@ -325,6 +325,7 @@ async function startPrediction(paths) {
       notes: notesList,
       timesignature: timesignatureValue,
       tempo: tempoValue,
+      numbars: numbarsValue,
     }),
     headers: {
       "Content-type": "application/json"
