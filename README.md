@@ -1,22 +1,20 @@
-js-piano
+tinymusic 
 ========
+Simple keyboard that inpaints notes using a 
+BERT-based music inpainting model with [Replicate API](https://replicate.com/andreasjansson/music-inpainting-bert). 
 
-A simple Javascript piano.
+Piano interface/javascript code built on top of 
+[michaelmp's js-piano](https://github.com/michaelmp/js-piano)
 
-Features:
+**Note**: This code is unfinished and future developments may be made.
 
-* 28 keys, A2-C5 chromatic.
-* 16-bit, 44.1 KHz Steinway samples.
-* Per-key sustain, plus a sustain pedal.
-* 100% HTML/Javascript.
+## Usage
+----
 
-Known Issues:
+To run locally: ```python app.py```, and open http://localhost:5000 to see the webpage running. 
 
-* Key rollover. Basic USB keyboards have a physical limit of keys you can simultaneously play.
-* Most audio mixers act strangely when many sounds are played simultaneously (around 10).
-* Some audio mixers (e.g. Pulse Audio) are known to have bugs concerning HTML5 audio as of this writing.
 
-Ogg-format audio samples are known to work in Firefox and Chrome.
+- Play a series of notes on the keyboard
+- Select a time signature/tempo
+- Wait for the notes to be inpainted (a music score is outputted)
 
-Samples are provided by the University of Iowa's Electronic Music Studio:
-http://theremin.music.uiowa.edu/MISpiano.html
